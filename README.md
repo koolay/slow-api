@@ -5,8 +5,8 @@ slow-api
 
 - collector
 
-  - collect slow sql
-  - collect sow http api
+  - slow sql
+  - slow http api
 
 - admin UI
 
