@@ -1,0 +1,14 @@
+backend="postgres"
+log_file=""
+log_level="debug"
+
+[collectors]
+[collectors.mysql]
+slowlog="/Users/huwl/Downloads/mysql-slow.log.txt"
+
+[backends]
+[backends.postgres]
+dsn="postgres://postgres:dev@localhost:5432/slowapi?sslmode=disable"
+
+[backends.mysql]
+dsn="root:dev@tcp(localhost:3306)/slowapi"
