@@ -1,0 +1,58 @@
+/usr/sbin/mysqld, Version: 5.5.32-31.0-log (Percona Server (GPL), Release 31.0). started with:
+Tcp port: 3306  Unix socket: /var/run/mysqld/mysqld.sock
+Time                 Id Command    Argument
+# Time: 160817  6:45:02
+# User@Host: app.goclio.com[app.goclio.com] @  [172.18.2.134]
+# Thread_id: 4547416  Schema: themis_production  Last_errno: 0  Killed: 0
+# Query_time: 1.891639  Lock_time: 0.000062  Rows_sent: 0  Rows_examined: 598105  Rows_affected: 0  Rows_read: 598105
+# Bytes_sent: 104  Tmp_tables: 0  Tmp_disk_tables: 0  Tmp_table_sizes: 0
+# InnoDB_trx_id: 2522B6C610
+# QC_Hit: No  Full_scan: Yes  Full_join: No  Tmp_table: No  Tmp_table_on_disk: No
+# Filesort: No  Filesort_on_disk: No  Merge_passes: 0
+#   InnoDB_IO_r_ops: 0  InnoDB_IO_r_bytes: 0  InnoDB_IO_r_wait: 0.000000
+#   InnoDB_rec_lock_wait: 0.000000  InnoDB_queue_wait: 0.000000
+#   InnoDB_pages_distinct: 19985
+use themis_production;
+SET timestamp=1471416302;
+SELECT purchases.account_id FROM `purchases` INNER JOIN `accounts` ON `accounts`.`id` = `purchases`.`account_id` LEFT OUTER JOIN mrr_events ON mrr_events.purchase_id = purchases.id WHERE `purchases`.`charge_code` IN (0, 1, 2, 3) AND (purchases.created_at >= '2010-01-01 08:00:00.000000') AND (mrr_events.id IS NULL);
+# Time: 160817  6:45:18
+# User@Host: app.goclio.com[app.goclio.com] @  [172.18.2.43]
+# Thread_id: 4548178  Schema: themis_production  Last_errno: 0  Killed: 0
+# Query_time: 2.022174  Lock_time: 0.000131  Rows_sent: 0  Rows_examined: 447629  Rows_affected: 0  Rows_read: 447629
+# Bytes_sent: 4347  Tmp_tables: 0  Tmp_disk_tables: 0  Tmp_table_sizes: 0
+# InnoDB_trx_id: 2522B75A6E
+# QC_Hit: No  Full_scan: No  Full_join: No  Tmp_table: No  Tmp_table_on_disk: No
+# Filesort: No  Filesort_on_disk: No  Merge_passes: 0
+#   InnoDB_IO_r_ops: 4332  InnoDB_IO_r_bytes: 70975488  InnoDB_IO_r_wait: 0.727325
+#   InnoDB_rec_lock_wait: 0.000000  InnoDB_queue_wait: 0.000000
+#   InnoDB_pages_distinct: 7423
+SET timestamp=1471416318;
+SELECT  `calendar_entry_memberships`.`id` AS t0_r0, `calendar_entry_memberships`.`calendar_entry_id` AS t0_r1, `calendar_entry_memberships`.`calendar_id` AS t0_r2, `calendar_entry_memberships`.`permission` AS t0_r3, `calendar_entry_memberships`.`invite_accepted` AS t0_r4, `calendar_entry_memberships`.`invite_accepted_id` AS t0_r5, `calendar_entry_memberships`.`created_at` AS t0_r6, `calendar_entry_memberships`.`updated_at` AS t0_r7, `calendar_entries`.`id` AS t1_r0, `calendar_entries`.`summary` AS t1_r1, `calendar_entries`.`description` AS t1_r2, `calendar_entries`.`location` AS t1_r3, `calendar_entries`.`start_at` AS t1_r4, `calendar_entries`.`end_at` AS t1_r5, `calendar_entries`.`all_day` AS t1_r6, `calendar_entries`.`status` AS t1_r7, `calendar_entries`.`user_id` AS t1_r8, `calendar_entries`.`account_id` AS t1_r9, `calendar_entries`.`matter_id` AS t1_r10, `calendar_entries`.`created_at` AS t1_r11, `calendar_entries`.`updated_at` AS t1_r12, `calendar_entries`.`recurrence_rule` AS t1_r13, `calendar_entries`.`guid` AS t1_r14, `calendar_entries`.`import_id` AS t1_r15, `calendar_entries`.`original_event_start_at` AS t1_r16, `calendar_entries`.`recurrence_exception_dates` AS t1_r17, `calendar_entries`.`parent_calendar_entry_id` AS t1_r18, `matters`.`id` AS t2_r0, `matters`.`number` AS t2_r1, `matters`.`description` AS t2_r2, `matters`.`open_date` AS t2_r3, `matters`.`close_date` AS t2_r4, `matters`.`client_id` AS t2_r5, `matters`.`practice_area_id` AS t2_r6, `matters`.`created_at` AS t2_r7, `matters`.`updated_at` AS t2_r8, `matters`.`user_id` AS t2_r9, `matters`.`group_id` AS t2_r10, `matters`.`custom_number` AS t2_r11, `matters`.`location` AS t2_r12, `matters`.`account_id` AS t2_r13, `matters`.`display_number` AS t2_r14, `matters`.`client_reference` AS t2_r15, `matters`.`import_id` AS t2_r16, `matters`.`responsible_attorney_id` AS t2_r17, `matters`.`billable` AS t2_r18, `matters`.`pending_date` AS t2_r19, `matters`.`flat_rate_activity_id` AS t2_r20, `matters`.`originating_attorney_id` AS t2_r21, `matters`.`status` AS t2_r22 FROM `calendar_entry_memberships` LEFT OUTER JOIN `calendar_entries` ON `calendar_entries`.`id` = `calendar_entry_memberships`.`calendar_entry_id` LEFT OUTER JOIN `matters` ON `matters`.`id` = `calendar_entries`.`matter_id` LEFT OUTER JOIN `external_syncs` ON `external_syncs`.syncable_id = `calendar_entry_memberships`.id AND `external_syncs`.syncable_type = 'CalendarEntryMembership' AND `external_syncs`.user_id = 344410474 AND external_syncs.clio_state <> '3' AND `external_syncs`.type = 1 WHERE `calendar_entry_memberships`.`calendar_id` = 418844 AND (calendar_entries.updated_at > '2016-06-17 06:45:16.187800' OR calendar_entries.end_at > '2016-06-17 06:45:16.187800' OR calendar_entries.recurrence_rule IS NOT NULL OR calendar_entries.parent_calendar_entry_id IS NOT NULL) AND (external_syncs.id IS NULL)  ORDER BY `calendar_entry_memberships`.`id` ASC LIMIT 1000 OFFSET 0;
+# Time: 160817  6:50:02
+# User@Host: app.goclio.com[app.goclio.com] @  [172.18.2.130]
+# Thread_id: 4560104  Schema: themis_production  Last_errno: 0  Killed: 0
+# Query_time: 1.844946  Lock_time: 0.000053  Rows_sent: 0  Rows_examined: 598105  Rows_affected: 0  Rows_read: 598105
+# Bytes_sent: 104  Tmp_tables: 0  Tmp_disk_tables: 0  Tmp_table_sizes: 0
+# InnoDB_trx_id: 2522C2EAC2
+# QC_Hit: No  Full_scan: Yes  Full_join: No  Tmp_table: No  Tmp_table_on_disk: No
+# Filesort: No  Filesort_on_disk: No  Merge_passes: 0
+#   InnoDB_IO_r_ops: 0  InnoDB_IO_r_bytes: 0  InnoDB_IO_r_wait: 0.000000
+#   InnoDB_rec_lock_wait: 0.000000  InnoDB_queue_wait: 0.000000
+#   InnoDB_pages_distinct: 19985
+SET timestamp=1471416602;
+SELECT purchases.account_id FROM `purchases` INNER JOIN `accounts` ON `accounts`.`id` = `purchases`.`account_id` LEFT OUTER JOIN mrr_events ON mrr_events.purchase_id = purchases.id WHERE `purchases`.`charge_code` IN (0, 1, 2, 3) AND (purchases.created_at >= '2010-01-01 08:00:00.000000') AND (mrr_events.id IS NULL);
+# Time: 160817  6:51:10
+# User@Host: app.goclio.com[app.goclio.com] @  [172.18.2.134]
+# Thread_id: 4544997  Schema: themis_production  Last_errno: 0  Killed: 0
+# Query_time: 1.469641  Lock_time: 0.000074  Rows_sent: 14478  Rows_examined: 63303  Rows_affected: 0  Rows_read: 63303
+# Bytes_sent: 1697895  Tmp_tables: 1  Tmp_disk_tables: 1  Tmp_table_sizes: 16053540
+# InnoDB_trx_id: 2522C621BF
+# QC_Hit: No  Full_scan: No  Full_join: No  Tmp_table: Yes  Tmp_table_on_disk: Yes
+# Filesort: Yes  Filesort_on_disk: No  Merge_passes: 0
+#   InnoDB_IO_r_ops: 0  InnoDB_IO_r_bytes: 0  InnoDB_IO_r_wait: 0.000000
+#   InnoDB_rec_lock_wait: 0.000000  InnoDB_queue_wait: 0.000000
+#   InnoDB_pages_distinct: 6686
+SET timestamp=1471416670;
+SELECT calendar_entries.id AS UniqueId, calendar_entries.updated_at AS LastModified, NULL AS IsPrivate, IF(matters.display_number IS NOT NULL,
+                             CONCAT(calendar_entries.summary, ' (', matters.display_number, ')'),
+                             calendar_entries.summary) AS Description, calendar_entries.location AS Location, calendar_entries.description AS Notes, NULL AS Matter, calendar_entries.start_at AS StartTime, calendar_entries.end_at AS EndTime, IF(calendar_entries.all_day, 'true', 'false') AS Untimed, IF(reminders.id IS NOT NULL, 'TRUE', NULL) AS AlarmSet, IF(reminders.duration IS NOT NULL, reminders.duration DIV 60, NULL ) AS AlarmMins, NULL AS AlarmTime, calendar_entries.recurrence_rule AS RRule FROM `calendar_entries` INNER JOIN `calendar_entry_memberships` ON `calendar_entries`.`id` = `calendar_entry_memberships`.`calendar_entry_id` LEFT OUTER JOIN reminders ON reminders.subject_id = calendar_entries.id AND reminders.subject_type = '7' LEFT OUTER JOIN matters ON matters.id = calendar_entries.matter_id WHERE `calendar_entry_memberships`.`calendar_id` = 378527 GROUP BY calendar_entries.id  ORDER BY calendar_entries.id,reminders.id;
