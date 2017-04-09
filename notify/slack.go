@@ -28,7 +28,7 @@ func (slackNotify SlackNotify) GetClientName() string {
 	return "Slack"
 }
 
-func (slackNotify SlackNotify) SendSlowSqlNotification(notification *SlowSqlNotification) error {
+func (slackNotify SlackNotify) SendSlowSqlNotification(slowSql *SlowSql) error {
 	//logging.Logger.INFO.Printf("send mail %v", notification)
 	return nil
 }
@@ -46,11 +46,14 @@ func (slackNotify SlackNotify) Initialize() error {
 	return nil
 }
 
-func (slackNotify SlackNotify) SendResponseTimeNotification(responseTimeNotification *ResponseTimeNotification) error {
+func (slackNotify SlackNotify) SendSlowAPINotification(slowAPI *SlowAPI) error {
 
-	message := getMessageFromResponseTimeNotification(responseTimeNotification)
+	message, err := json.Marshal(slowAPI)
+	if err != nil {
+		return err
+	}
 
-	payload, jsonErr := slackNotify.getJsonParamBody(message)
+	payload, jsonErr := slackNotify.getJsonParamBody(string(message))
 
 	if jsonErr != nil {
 		return jsonErr

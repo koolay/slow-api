@@ -5,7 +5,7 @@ notify=["mail", "slack"]
 
 [collectors]
 [collectors.mysql]
-slowlog="/Users/huwl/Downloads/mysql-slow.log.txt"
+slowlog="/var/mysql/mysql-slow.log"
 alert_slow_seconds=3
 
 [backends]
@@ -18,11 +18,11 @@ dsn="root:dev@tcp(localhost:3306)/slowapi"
 [notifies]
 [notifies.mail]
 username="slowapi@gmail.com"
-password="slowapi"
+password="xxx"
 host="smtp.gmail.com"
-port=587
+port=25
 from="slowapi@gmail.com"
-to=["a@mail.com","b@mail.com"]
+to=["user1@gmail.com", "user2@gmail.com"]
 
 [notifies.slack]
 channel="#general"

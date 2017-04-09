@@ -1,15 +1,10 @@
 package notify
 
 import (
-	"bytes"
-	"encoding/json"
-	"net"
-	"net/mail"
+	"fmt"
 	"net/smtp"
 	"strconv"
-	"time"
-
-	"github.com/koolay/slow-api/logging"
+	"strings"
 )
 
 type MailNotify struct {
@@ -22,131 +17,70 @@ type MailNotify struct {
 }
 
 var (
-	isAuthorized bool
-	client       *smtp.Client
+	client *smtp.Client
 )
 
 func (mailNotify MailNotify) GetClientName() string {
 	return "Smtp Mail"
 }
 
-func (mailNotify MailNotify) Initialize() error {
+func (mailNotify MailNotify) Send(subject, message string) error {
 
-	// Check if server listens on that port.
-	if len(mailNotify.Username) == 0 && len(mailNotify.Password) == 0 {
-		isAuthorized = false
-
-		conn, err := smtp.Dial(mailNotify.Host + ":" + strconv.Itoa(mailNotify.Port))
-
-		if err != nil {
-			return err
-		}
-
-		client = conn
-
-	} else {
-		isAuthorized = true
-		conn, err := net.DialTimeout("tcp", mailNotify.Host+":"+strconv.Itoa(mailNotify.Port), 3*time.Second)
-		if err != nil {
-			return err
-		}
-		if conn != nil {
-			defer conn.Close()
-		}
+	var content string
+	header := make(map[string]string)
+	header["From"] = mailNotify.From
+	header["To"] = strings.Join(mailNotify.To, ";")
+	header["Subject"] = subject
+	header["MIME-Version"] = "1.0"
+	header["Content-Type"] = "text/html; charset=iso-8859-1"
+	for k, v := range header {
+		content += fmt.Sprintf("%s: %s\n", k, v)
 	}
-	// Validate sender and recipient
-	_, err := mail.ParseAddress(mailNotify.From)
-	if err != nil {
-		return err
-	}
+	content += "<html><body> \n"
+	content += message
+	content += "</body></html>"
 
-	for _, addr := range mailNotify.To {
-		_, err = mail.ParseAddress(addr)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	auth := smtp.PlainAuth("", mailNotify.Username, mailNotify.Password, mailNotify.Host)
+	return smtp.SendMail(
+		mailNotify.Host+":"+strconv.Itoa(mailNotify.Port),
+		auth,
+		mailNotify.From,
+		mailNotify.To,
+		[]byte(content),
+	)
 }
 
-func (mailNotify MailNotify) SendSlowSqlNotification(notification *SlowSqlNotification) error {
-	logging.Logger.INFO.Printf("send mail %v", notification)
-	message, err := json.Marshal(notification)
-	if isAuthorized {
-
-		auth := smtp.PlainAuth("", mailNotify.Username, mailNotify.Password, mailNotify.Host)
-		if err == nil {
-
-			// Connect to the server, authenticate, set the sender and recipient,
-			// and send the email all in one step.
-			err = smtp.SendMail(
-				mailNotify.Host+":"+strconv.Itoa(mailNotify.Port),
-				auth,
-				mailNotify.From,
-				mailNotify.To,
-				message,
-			)
-			logging.Logger.FATAL.Fatalln("sent and exit")
-
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-
-	} else {
-		wc, err := client.Data()
-
-		if err != nil {
-			return err
-		}
-
-		defer wc.Close()
-		if _, err = wc.Write(message); err != nil {
-			return err
-		}
-		return nil
-	}
-
-	return nil
+func (mailNotify MailNotify) SendSlowSqlNotification(notification *SlowSql) error {
+	message := fmt.Sprintf(`
+	<b>Host:</b> %s </br>
+	<b>QueryTime:</b> %f </br>
+	<b>LockTime:</b> %f </br>
+	<b>RowsSent:</b> %d </br>
+	<b>RowsExamined:</b> %d </br>
+	<b>When:</b> %s </br>
+	<b>Sql:</b> <pre><code style="display:block;white-space:pre-wrap">%s</code></pre> </br>
+	`, notification.Host,
+		notification.QueryTime,
+		notification.LockTime,
+		notification.RowsSent,
+		notification.RowsExamined,
+		notification.When,
+		notification.Sql,
+	)
+	return mailNotify.Send("SlowAPI-slow sql", message)
 }
 
-func (mailNotify MailNotify) SendResponseTimeNotification(responseTimeNotification *ResponseTimeNotification) error {
-	if isAuthorized {
+func (mailNotify MailNotify) SendSlowAPINotification(notification *SlowAPI) error {
 
-		auth := smtp.PlainAuth("", mailNotify.Username, mailNotify.Password, mailNotify.Host)
-		message := getMessageFromResponseTimeNotification(responseTimeNotification)
+	message := fmt.Sprintf(`
+	<b>URL:</b> %s </br>
+	<b>Method:</b> %s </br>
+	<b>ResponseTime:</b> %d </br>
+	`,
+		notification.Url,
+		notification.Method,
+		notification.Responsetime,
+	)
 
-		// Connect to the server, authenticate, set the sender and recipient,
-		// and send the email all in one step.
-		err := smtp.SendMail(
-			mailNotify.Host+":"+strconv.Itoa(mailNotify.Port),
-			auth,
-			mailNotify.From,
-			mailNotify.To,
-			bytes.NewBufferString(message).Bytes(),
-		)
-
-		if err != nil {
-			return err
-		}
-		return nil
-	} else {
-		wc, err := client.Data()
-
-		if err != nil {
-			return err
-		}
-
-		defer wc.Close()
-
-		message := bytes.NewBufferString(getMessageFromResponseTimeNotification(responseTimeNotification))
-
-		if _, err = message.WriteTo(wc); err != nil {
-			return err
-		}
-
-		return nil
-	}
+	return mailNotify.Send("SlowAPI-slow api", message)
 }

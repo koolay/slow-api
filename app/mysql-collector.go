@@ -54,13 +54,14 @@ func (collector *MysqlCollector) Start() error {
 func (collector *MysqlCollector) notify(parsed *parse.SlowQuery) {
 	if parsed.QueryTime >= collector.alertSlowSeconds {
 		logging.Logger.DEBUG.Println("notify")
-		body := &notify.SlowSqlNotification{
+		body := &notify.SlowSql{
 			Sql:          parsed.Sql,
 			Host:         parsed.Host,
 			QueryTime:    parsed.QueryTime,
 			LockTime:     parsed.LockTime,
 			RowsSent:     parsed.RowsSent,
 			RowsExamined: parsed.RowsExamined,
+			When:         parsed.When,
 		}
 		notify.SendSlowSqlNotification(body)
 	}

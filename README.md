@@ -1,17 +1,18 @@
 slow-api
 --------
 
+Serve for tailing slow sql log, slow http api, and alerts via email, slack ...
+
 ## Features
 
-- collector
+- collect and store
 
   - slow sql
   - slow http api
 
 - admin UI
 
-
 - alert
 
   - email
-  - app message
+  - slack
