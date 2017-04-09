@@ -20,6 +20,8 @@ var serveCmd = &cobra.Command{
 		doneChan := make(chan bool)
 		errChan := make(chan error, 10)
 		signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+		logging.Logger.DEBUG.Println("init notification")
+		app.InitNotification()
 		go func() {
 			collector := app.NewMySqlCollector(config.Context)
 			logging.Logger.INFO.Println("start collect mysql slow log")

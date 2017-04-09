@@ -1,10 +1,12 @@
 backend="postgres"
 log_file=""
 log_level="debug"
+notify=["mail", "slack"]
 
 [collectors]
 [collectors.mysql]
 slowlog="/Users/huwl/Downloads/mysql-slow.log.txt"
+alert_slow_seconds=3
 
 [backends]
 [backends.postgres]
@@ -12,3 +14,18 @@ dsn="postgres://postgres:dev@localhost:5432/slowapi?sslmode=disable"
 
 [backends.mysql]
 dsn="root:dev@tcp(localhost:3306)/slowapi"
+
+[notifies]
+[notifies.mail]
+username="slowapi@gmail.com"
+password="slowapi"
+host="smtp.gmail.com"
+port=587
+from="slowapi@gmail.com"
+to=["a@mail.com","b@mail.com"]
+
+[notifies.slack]
+channel="#general"
+username="slowapi"
+channel_web_hook_url="https://hooks.slack.com/services/xxxx"
+icon_url=""

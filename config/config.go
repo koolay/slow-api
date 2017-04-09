@@ -1,17 +1,20 @@
 package config
 
 import (
-	"errors"
+	"strconv"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 )
 
 type Config struct {
-	LogFile      string
-	LogLevel     string
-	MysqlLogPath string
-	Backend      string
+	LogFile               string
+	LogLevel              string
+	MysqlLogPath          string
+	MysqlSlowAlertSeconds float32
+	Backend               string
+	Notify                []string
 }
 
 var (
@@ -25,6 +28,7 @@ func InitConfig(cfg *Config) *Config {
 		cfg.LogFile = viper.GetString("log_file")
 		cfg.LogLevel = viper.GetString("log_level")
 		cfg.Backend = viper.GetString("backend")
+		cfg.Notify = viper.GetStringSlice("notify")
 	}
 	initMySqlCollectorOptions(cfg)
 	Context = cfg
@@ -37,6 +41,11 @@ func initMySqlCollectorOptions(cfg *Config) {
 		return
 	}
 	cfg.MysqlLogPath = options["slowlog"]
+	if alertSeconds, err := strconv.ParseFloat(options["alert_slow_seconds"], 32); err == nil {
+		cfg.MysqlSlowAlertSeconds = float32(alertSeconds)
+	} else {
+		panic(err)
+	}
 }
 
 func ValueOfMap(key string, m map[string]interface{}, defaultValue string) string {

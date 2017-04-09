@@ -6,6 +6,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/koolay/slow-api/logging"
 )
 
 // Parser parse mysql slowlog to go struct.
@@ -14,7 +16,7 @@ type MysqlParser struct {
 }
 
 type SlowQuery struct {
-	ParseTime    time.Time `db:"parse_time"`
+	When         time.Time `db:"when"`
 	User         string    `db:"user"`
 	Host         string    `db:"host"`
 	QueryTime    float32   `db:"query_time"`
@@ -25,26 +27,13 @@ type SlowQuery struct {
 }
 
 var (
-	reg1 *regexp.Regexp = regexp.MustCompile(`^#? User\@Host:\s+(\S+)\s+\@\s+(\S+).*`)
-	reg2 *regexp.Regexp = regexp.MustCompile(`^# Query_time: ([0-9.]+)\s+Lock_time: ([0-9.]+)\s+Rows_sent: ([0-9.]+)\s+Rows_examined: ([0-9.]+).*`)
+	regTime *regexp.Regexp = regexp.MustCompile(`^#? Time:\s+(\S+)\s+(\S+).*`)
+	reg1    *regexp.Regexp = regexp.MustCompile(`^#? User\@Host:\s+(\S+)\s+\@\s+(\S+).*`)
+	reg2    *regexp.Regexp = regexp.MustCompile(`^# Query_time: ([0-9.]+)\s+Lock_time: ([0-9.]+)\s+Rows_sent: ([0-9.]+)\s+Rows_examined: ([0-9.]+).*`)
 )
 
 func (p *SlowQuery) reset() {
 	p.Sql = ""
-}
-
-// AsLTSV returns parsed slowlog as LTSV format.
-func (p *SlowQuery) AsLTSV() string {
-	return strings.Join([]string{
-		fmt.Sprintf("parse_time:%s", p.ParseTime),
-		fmt.Sprintf("user:%s", p.User),
-		fmt.Sprintf("host:%s", p.Host),
-		fmt.Sprintf("query_time:%f", p.QueryTime),
-		fmt.Sprintf("lock_time:%f", p.LockTime),
-		fmt.Sprintf("rows_sent:%d", p.RowsSent),
-		fmt.Sprintf("rows_examined:%d", p.RowsExamined),
-		fmt.Sprintf("sql:%s", p.Sql),
-	}, "\t")
 }
 
 // AsJSON returns parsed slowlog as JSON format.
@@ -69,9 +58,18 @@ func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool) {
 	}
 
 	// DateTime
-	if strings.HasPrefix(line, "# Time:") {
+	if r := regTime.FindStringSubmatch(line); r != nil {
+		ym := r[1]
+		hms := r[2]
+		y := "20" + ym[:2]
+		m := ym[2:4]
+		d := ym[4:6]
+		if when, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%s-%s-%s %s", y, m, d, hms)); err == nil {
+			parsed.When = when
+		} else {
+			logging.Logger.ERROR.Println(err.Error())
+		}
 		parsed.reset()
-		parsed.ParseTime = time.Now() // t.Unix()
 		return false
 	}
 

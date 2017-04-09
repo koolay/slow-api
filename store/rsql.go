@@ -48,9 +48,10 @@ func (rs *rsqlStorage) SaveMysqlSlowLog(parsed *parse.SlowQuery) error {
 	conn, err := rs.open()
 	if err == nil {
 		defer conn.Close()
-		conn.InsertInto(tableName).Columns("parse_time",
+		conn.InsertInto(tableName).Columns(
 			"user",
 			"host",
+			"when",
 			"query_time",
 			"sql",
 			"lock_time",
