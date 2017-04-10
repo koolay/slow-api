@@ -24,4 +24,5 @@ _testmain.go
 
 .vagrant
 npm-debug.log
-econfig
+slow-api
+slowapi

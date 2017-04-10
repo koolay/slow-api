@@ -1,0 +1,180 @@
+{
+	"ImportPath": "github.com/koolay/slow-api",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/fsnotify/fsnotify",
+			"Comment": "v1.4.2-5-gff7bc41",
+			"Rev": "ff7bc41d4007f67e5456703c34342df4e0113f64"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-2-g2e00b5c",
+			"Rev": "2e00b5cd70399450106cec6431c2e2ce3cae5034"
+		},
+		{
+			"ImportPath": "github.com/gocraft/dbr",
+			"Comment": "v2.1-6-gc4f8f99",
+			"Rev": "c4f8f99b25c74a821ffa41ca2e339cc24a6b4a67"
+		},
+		{
+			"ImportPath": "github.com/gocraft/dbr/dialect",
+			"Comment": "v2.1-6-gc4f8f99",
+			"Rev": "c4f8f99b25c74a821ffa41ca2e339cc24a6b4a67"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/ast",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/parser",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/scanner",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/strconv",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/hcl/token",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/parser",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/scanner",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hashicorp/hcl/json/token",
+			"Rev": "1c284ec98f4b398443cbabb0d9197f7f4cc0077c"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail",
+			"Comment": "v1.0.0-9-gfaf842b",
+			"Rev": "faf842bde7ed83bbc3c65a2c454fae39bc29a95f"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/ratelimiter",
+			"Comment": "v1.0.0-9-gfaf842b",
+			"Rev": "faf842bde7ed83bbc3c65a2c454fae39bc29a95f"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/util",
+			"Comment": "v1.0.0-9-gfaf842b",
+			"Rev": "faf842bde7ed83bbc3c65a2c454fae39bc29a95f"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/watch",
+			"Comment": "v1.0.0-9-gfaf842b",
+			"Rev": "faf842bde7ed83bbc3c65a2c454fae39bc29a95f"
+		},
+		{
+			"ImportPath": "github.com/hpcloud/tail/winfile",
+			"Comment": "v1.0.0-9-gfaf842b",
+			"Rev": "faf842bde7ed83bbc3c65a2c454fae39bc29a95f"
+		},
+		{
+			"ImportPath": "github.com/inconshreveable/mousetrap",
+			"Rev": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-164-g472a074",
+			"Rev": "472a0745531a17dbac346e828b4c60e73ddff30c"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-164-g472a074",
+			"Rev": "472a0745531a17dbac346e828b4c60e73ddff30c"
+		},
+		{
+			"ImportPath": "github.com/magiconair/properties",
+			"Comment": "v1.7.2-7-g51463bf",
+			"Rev": "51463bfca2576e06c62a8504b5c0f06d61312647"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "53818660ed4955e899c0bcafa97299a388bd7c8e"
+		},
+		{
+			"ImportPath": "github.com/pelletier/go-buffruneio",
+			"Comment": "v0.2.0",
+			"Rev": "c37440a7cf42ac63b919c752ca73a85067e05992"
+		},
+		{
+			"ImportPath": "github.com/pelletier/go-toml",
+			"Comment": "v0.5.0-5-gf6e7596",
+			"Rev": "f6e7596e8daafd44dc9e5c208dc73035020c8481"
+		},
+		{
+			"ImportPath": "github.com/pkg/errors",
+			"Comment": "v0.8.0-3-gbfd5150",
+			"Rev": "bfd5150e4e41705ded2129ec33379de1cb90b513"
+		},
+		{
+			"ImportPath": "github.com/spf13/afero",
+			"Rev": "9be650865eab0c12963d8753212f4f9c66cdcf12"
+		},
+		{
+			"ImportPath": "github.com/spf13/afero/mem",
+			"Rev": "9be650865eab0c12963d8753212f4f9c66cdcf12"
+		},
+		{
+			"ImportPath": "github.com/spf13/cast",
+			"Comment": "v1.0.0",
+			"Rev": "ce135a4ebeee6cfe9a26c93ee0d37825f26113c7"
+		},
+		{
+			"ImportPath": "github.com/spf13/cobra",
+			"Rev": "7be4beda01ec05d0b93d80b3facd2b6f44080d94"
+		},
+		{
+			"ImportPath": "github.com/spf13/jwalterweatherman",
+			"Rev": "fa7ca7e836cf3a8bb4ebf799f472c12d7e903d66"
+		},
+		{
+			"ImportPath": "github.com/spf13/pflag",
+			"Rev": "9ff6c6923cfffbcd502984b8e0c80539a94968b7"
+		},
+		{
+			"ImportPath": "github.com/spf13/viper",
+			"Rev": "84f94806c67f59dd7ae87bc5351f7a9c94a4558d"
+		},
+		{
+			"ImportPath": "golang.org/x/sys/unix",
+			"Rev": "8fd966b47dbdd4faa03de0d06e3d733baeb9a1a9"
+		},
+		{
+			"ImportPath": "golang.org/x/text/transform",
+			"Rev": "fc7fa097411d30e6708badff276c4c164425590c"
+		},
+		{
+			"ImportPath": "golang.org/x/text/unicode/norm",
+			"Rev": "fc7fa097411d30e6708badff276c4c164425590c"
+		},
+		{
+			"ImportPath": "gopkg.in/fsnotify.v1",
+			"Comment": "v1.4.2",
+			"Rev": "629574ca2a5df945712d3079857300b5e4da0236"
+		},
+		{
+			"ImportPath": "gopkg.in/tomb.v1",
+			"Rev": "dd632973f1e7218eb1089048e0798ec9ae7dceb8"
+		},
+		{
+			"ImportPath": "gopkg.in/yaml.v2",
+			"Rev": "a3f3340b5840cee44f372bddb5880fcbc419b46a"
+		}
+	]
+}
