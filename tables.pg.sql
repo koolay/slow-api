@@ -1,13 +1,14 @@
-CREATE TABLE public.slow_sql (
-  created_on TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
-  "user" CHARACTER VARYING(200),
-  host CHARACTER VARYING(100),
-  query_time DOUBLE PRECISION,
-  lock_time DOUBLE PRECISION,
-  rows_sent INTEGER,
-  rows_examined INTEGER,
-  sql TEXT,
-  id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('slow_sql_id_seq'::regclass),
-  "when" TIMESTAMP WITHOUT TIME ZONE
+create table slow_sql.slow_sql
+(
+	id int not null auto_increment
+		primary key,
+	user varchar(200) null,
+	host varchar(100) null,
+	query_time double null,
+	lock_time double null,
+	rows_sent int null,
+	rows_examined int null,
+	`sql` text null,
+	`when` timestamp default CURRENT_TIMESTAMP not null,
+	created_on datetime default CURRENT_TIMESTAMP null
 );
-CREATE UNIQUE INDEX slow_sql_id_uindex ON slow_sql USING BTREE (id);
