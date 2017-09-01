@@ -1,6 +1,7 @@
 backend="postgres"
 log_file=""
 log_level="debug"
+notify_duration=300
 notify=["mail", "slack"]
 
 [collectors]

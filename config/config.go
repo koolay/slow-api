@@ -15,6 +15,8 @@ type Config struct {
 	MysqlSlowAlertSeconds float32
 	Backend               string
 	Notify                []string
+	// same slow record, notify duration seconds
+	NotifyDuration int
 }
 
 var (
@@ -29,6 +31,7 @@ func InitConfig(cfg *Config) *Config {
 		cfg.LogLevel = viper.GetString("log_level")
 		cfg.Backend = viper.GetString("backend")
 		cfg.Notify = viper.GetStringSlice("notify")
+		cfg.NotifyDuration = viper.GetInt("notify_duration")
 	}
 	initMySqlCollectorOptions(cfg)
 	Context = cfg
