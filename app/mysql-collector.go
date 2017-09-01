@@ -18,10 +18,15 @@ import (
 type MysqlCollector struct {
 	filepath         string
 	alertSlowSeconds float32
+	notifyActor      *notify.NotifyStash
 }
 
 func NewMySqlCollector(cfg *config.Config) *MysqlCollector {
-	return &MysqlCollector{filepath: cfg.MysqlLogPath, alertSlowSeconds: cfg.MysqlSlowAlertSeconds}
+	return &MysqlCollector{
+		filepath:         cfg.MysqlLogPath,
+		alertSlowSeconds: cfg.MysqlSlowAlertSeconds,
+		notifyActor:      notify.NewNotifyStash(300),
+	}
 }
 
 func (collector *MysqlCollector) ImportLogFile(filepath string) error {
@@ -47,7 +52,6 @@ func (collector *MysqlCollector) ImportLogFile(filepath string) error {
 			}
 			if parser.Parse(parsed, string(line)) {
 				storage.SaveMysqlSlowLog(parsed)
-				collector.notify(parsed)
 			}
 		}
 	}
@@ -84,8 +88,7 @@ func (collector *MysqlCollector) Start() error {
 
 func (collector *MysqlCollector) notify(parsed *parse.SlowQuery) {
 	if parsed.QueryTime >= collector.alertSlowSeconds {
-		logging.Logger.DEBUG.Println("notify")
-		body := &notify.SlowSql{
+		slowSqlNotify := &notify.SlowSql{
 			Sql:          parsed.Sql,
 			Host:         parsed.Host,
 			QueryTime:    parsed.QueryTime,
@@ -94,6 +97,6 @@ func (collector *MysqlCollector) notify(parsed *parse.SlowQuery) {
 			RowsExamined: parsed.RowsExamined,
 			When:         parsed.When,
 		}
-		notify.SendSlowSqlNotification(body)
+		collector.notifyActor.Push(slowSqlNotify.Sql, slowSqlNotify)
 	}
 }

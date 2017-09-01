@@ -9,10 +9,23 @@ import (
 	"github.com/koolay/slow-api/logging"
 )
 
+var (
+	errorCount       = 0
+	notificationsMap = make(map[string]Notify)
+)
+
+type NotifyItem interface {
+	MustNotify() error
+}
+
 type SlowAPI struct {
 	Url          string
 	Method       string
 	Responsetime int64
+}
+
+func (p *SlowAPI) MustNotify() error {
+  return sendSlowAPINotification(p)
 }
 
 type SlowSql struct {
@@ -25,10 +38,9 @@ type SlowSql struct {
 	When         time.Time `db:"when"`
 }
 
-var (
-	errorCount       = 0
-	notificationsMap = make(map[string]Notify)
-)
+func (p *SlowSql) MustNotify() error {
+  return sendSlowSqlNotification(p)
+}
 
 type Notify interface {
 	GetClientName() string
@@ -41,23 +53,26 @@ func AddNew(name string, notifyItem Notify) {
 }
 
 //Send response time notification to all clients registered
-func SendSlowAPINotification(slowAPI *SlowAPI) {
+func sendSlowAPINotification(slowAPI *SlowAPI) error {
 	var wg sync.WaitGroup
+	var lastErr error
 	for _, ntf := range notificationsMap {
 		wg.Add(1)
 		go func(ntf Notify) {
 			wg.Done()
 			err := ntf.SendSlowAPINotification(slowAPI)
 			if err != nil {
-				logging.Logger.ERROR.Println(err.Error())
+				lastErr = err
 			}
 		}(ntf)
 	}
 	wg.Wait()
+	return lastErr
 }
 
-func SendSlowSqlNotification(slowSql *SlowSql) {
+func sendSlowSqlNotification(slowSql *SlowSql) error {
 	var wg sync.WaitGroup
+	var lastErr error
 	for _, ntf := range notificationsMap {
 		logging.Logger.INFO.Println("send slow mysql mail")
 		wg.Add(1)
@@ -65,11 +80,12 @@ func SendSlowSqlNotification(slowSql *SlowSql) {
 			defer wg.Done()
 			err := ntf.SendSlowSqlNotification(slowSql)
 			if err != nil {
-				logging.Logger.ERROR.Println(err.Error())
+				lastErr = err
 			}
 		}(ntf)
 	}
 	wg.Wait()
+	return lastErr
 }
 
 //Send Test notification to all registered clients .To make sure everything is working

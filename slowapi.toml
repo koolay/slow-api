@@ -8,6 +8,10 @@ notify=["mail", "slack"]
 slowlog="/var/mysql/mysql-slow.log"
 alert_slow_seconds=3
 
+[collectors.nginx]
+access_log="/var/log/nginx/app.access.log"
+alert_slow_seconds=1
+
 [backends]
 [backends.postgres]
 dsn="postgres://postgres:dev@localhost:5432/slowapi?sslmode=disable"
