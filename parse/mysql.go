@@ -2,12 +2,11 @@ package parse
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 	"time"
-
-	"github.com/koolay/slow-api/logging"
 )
 
 // Parser parse mysql slowlog to go struct.
@@ -27,9 +26,10 @@ type SlowQuery struct {
 }
 
 var (
-	regTime *regexp.Regexp = regexp.MustCompile(`^#? Time:\s+(\S+)\s+(\S+).*`)
-	reg1    *regexp.Regexp = regexp.MustCompile(`^#? User\@Host:\s+(\S+)\s+\@\s+(\S+).*`)
-	reg2    *regexp.Regexp = regexp.MustCompile(`^# Query_time: ([0-9.]+)\s+Lock_time: ([0-9.]+)\s+Rows_sent: ([0-9.]+)\s+Rows_examined: ([0-9.]+).*`)
+	regTime     = regexp.MustCompile(`^#? Time:\s+(\S+)\s+(\S+).*`)
+	regTime2    = regexp.MustCompile(`^#?\s+Time:\s+([0-9-]+)T([0-9:]+)\..*`)
+	regUserHost = regexp.MustCompile(`^#? User\@Host:\s+([^\[\]\s]+)[^@]+\s+@\s+\[([^\[\]]+)\].*`)
+	reg2        = regexp.MustCompile(`^# Query_time: ([0-9.]+)\s+Lock_time: ([0-9.]+)\s+Rows_sent: ([0-9.]+)\s+Rows_examined: ([0-9.]+).*`)
 )
 
 func (p *SlowQuery) reset() {
@@ -50,13 +50,11 @@ func NewParser() MysqlParser {
 
 // Parse mysql slowlog.
 // You can receive parsed slowlog through channnel.
-func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool) {
-
+func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool, err error) {
 	completed = false
 	if shouldIgnore(line) {
-		return false
+		return
 	}
-
 	// DateTime
 	if r := regTime.FindStringSubmatch(line); r != nil {
 		ym := r[1]
@@ -64,20 +62,31 @@ func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool) {
 		y := "20" + ym[:2]
 		m := ym[2:4]
 		d := ym[4:6]
-		if when, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%s-%s-%s %s", y, m, d, hms)); err == nil {
+		when, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%s-%s-%s %s", y, m, d, hms))
+		if err == nil {
 			parsed.When = when
-		} else {
-			logging.Logger.ERROR.Println(err.Error())
 		}
 		parsed.reset()
-		return false
+		return false, err
+	} else if r := regTime2.FindStringSubmatch(line); r != nil {
+		date := r[1] + " " + r[2]
+		When, err := time.Parse("2006-01-02 15:04:05", date)
+		if err == nil {
+			parsed.When = When
+		}
+	}
+	if err != nil {
+		return false, err
 	}
 
 	// User, Host
-	if r := reg1.FindStringSubmatch(line); r != nil {
+	if r := regUserHost.FindStringSubmatch(line); r != nil {
+		if len(r) < 3 {
+			return false, errors.New("invalid user host line format")
+		}
 		parsed.User = r[1]
 		parsed.Host = r[2]
-		return false
+		return false, err
 	}
 
 	// QueryTime, LockTime, RowsSent, RowsExamined
@@ -86,7 +95,7 @@ func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool) {
 		parsed.LockTime = stringToFloat32(r[2])
 		parsed.RowsSent = stringToInt32(r[3])
 		parsed.RowsExamined = stringToInt32(r[4])
-		return false
+		return false, err
 	}
 
 	// Sql
@@ -95,10 +104,10 @@ func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool) {
 
 		if strings.HasSuffix(line, ";") && parsed.Sql != "" {
 			parsed.Sql = strings.Trim(parsed.Sql, " ")
-			return true
+			return true, err
 		}
 	}
-	return false
+	return false, nil
 }
 
 func shouldIgnore(line string) bool {

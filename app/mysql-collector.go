@@ -50,8 +50,12 @@ func (collector *MysqlCollector) ImportLogFile(filepath string) error {
 			if err != nil {
 				return err
 			}
-			if parser.Parse(parsed, string(line)) {
+			ok, err := parser.Parse(parsed, string(line))
+			if ok {
 				storage.SaveMysqlSlowLog(parsed)
+			}
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -76,10 +80,13 @@ func (collector *MysqlCollector) Start() error {
 	storage, err := store.NewStorage(config.Context.Backend)
 	if err == nil {
 		for line := range t.Lines {
-			logging.Logger.DEBUG.Println(line)
-			if parser.Parse(parsed, line.Text) {
+			logging.Logger.DEBUG.Println(line.Text)
+			ok, err := parser.Parse(parsed, line.Text)
+			if ok {
 				storage.SaveMysqlSlowLog(parsed)
 				collector.notify(parsed)
+			} else {
+				logging.Logger.ERROR.Print(err)
 			}
 		}
 	}

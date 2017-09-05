@@ -48,7 +48,7 @@ func (rs *rsqlStorage) SaveMysqlSlowLog(parsed *parse.SlowQuery) error {
 	conn, err := rs.open()
 	if err == nil {
 		defer conn.Close()
-		conn.InsertInto(tableName).Columns(
+		_, err = conn.InsertInto(tableName).Columns(
 			"user",
 			"host",
 			"when",
@@ -57,7 +57,11 @@ func (rs *rsqlStorage) SaveMysqlSlowLog(parsed *parse.SlowQuery) error {
 			"lock_time",
 			"rows_sent",
 			"rows_examined").Record(parsed).Exec()
-		logging.Logger.INFO.Println("inserted")
+		if err != nil {
+			logging.Logger.INFO.Println("inserted")
+		} else {
+			logging.Logger.ERROR.Print(err)
+		}
 	}
 	return err
 }

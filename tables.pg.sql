@@ -9,6 +9,6 @@ create table slow_sql.slow_sql
 	rows_sent int null,
 	rows_examined int null,
 	`sql` text null,
-	`when` timestamp default CURRENT_TIMESTAMP not null,
+	`when` datetime default CURRENT_TIMESTAMP not null,
 	created_on datetime default CURRENT_TIMESTAMP null
 );
