@@ -32,7 +32,7 @@ var (
 	reg2        = regexp.MustCompile(`^# Query_time: ([0-9.]+)\s+Lock_time: ([0-9.]+)\s+Rows_sent: ([0-9.]+)\s+Rows_examined: ([0-9.]+).*`)
 )
 
-func (p *SlowQuery) reset() {
+func (p *SlowQuery) Reset() {
 	p.Sql = ""
 }
 
@@ -55,53 +55,52 @@ func (p *MysqlParser) Parse(parsed *SlowQuery, line string) (completed bool, err
 	if shouldIgnore(line) {
 		return
 	}
-	// DateTime
-	if r := regTime.FindStringSubmatch(line); r != nil {
-		ym := r[1]
-		hms := r[2]
-		y := "20" + ym[:2]
-		m := ym[2:4]
-		d := ym[4:6]
-		when, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%s-%s-%s %s", y, m, d, hms))
-		if err == nil {
-			parsed.When = when
-		}
-		parsed.reset()
-		return false, err
-	} else if r := regTime2.FindStringSubmatch(line); r != nil {
-		date := r[1] + " " + r[2]
-		When, err := time.Parse("2006-01-02 15:04:05", date)
-		if err == nil {
-			parsed.When = When
-		}
-	}
-	if err != nil {
-		return false, err
-	}
-
-	// User, Host
-	if r := regUserHost.FindStringSubmatch(line); r != nil {
-		if len(r) < 3 {
-			return false, errors.New("invalid user host line format")
-		}
-		parsed.User = r[1]
-		parsed.Host = r[2]
-		return false, err
-	}
-
-	// QueryTime, LockTime, RowsSent, RowsExamined
-	if r := reg2.FindStringSubmatch(line); r != nil {
-		parsed.QueryTime = stringToFloat32(r[1])
-		parsed.LockTime = stringToFloat32(r[2])
-		parsed.RowsSent = stringToInt32(r[3])
-		parsed.RowsExamined = stringToInt32(r[4])
-		return false, err
-	}
-
 	// Sql
-	if !strings.HasPrefix(line, "#") {
-		parsed.Sql += strings.Trim(line, " \r\n") + " "
+	if strings.HasPrefix(line, "#") {
+		// DateTime
+		if r := regTime.FindStringSubmatch(line); r != nil {
+			ym := r[1]
+			hms := r[2]
+			y := "20" + ym[:2]
+			m := ym[2:4]
+			d := ym[4:6]
+			when, err := time.Parse("2006-01-02 15:04:05", fmt.Sprintf("%s-%s-%s %s", y, m, d, hms))
+			if err == nil {
+				parsed.When = when
+			}
+			parsed.Reset()
+			return false, err
+		} else if r := regTime2.FindStringSubmatch(line); r != nil {
+			date := r[1] + " " + r[2]
+			When, err := time.Parse("2006-01-02 15:04:05", date)
+			if err == nil {
+				parsed.When = When
+			}
+		}
+		if err != nil {
+			return false, err
+		}
 
+		// User, Host
+		if r := regUserHost.FindStringSubmatch(line); r != nil {
+			if len(r) < 3 {
+				return false, errors.New("invalid user host line format")
+			}
+			parsed.User = r[1]
+			parsed.Host = r[2]
+			return false, err
+		}
+
+		// QueryTime, LockTime, RowsSent, RowsExamined
+		if r := reg2.FindStringSubmatch(line); r != nil {
+			parsed.QueryTime = stringToFloat32(r[1])
+			parsed.LockTime = stringToFloat32(r[2])
+			parsed.RowsSent = stringToInt32(r[3])
+			parsed.RowsExamined = stringToInt32(r[4])
+			return false, err
+		}
+	} else {
+		parsed.Sql += strings.Trim(line, " \r\n") + " "
 		if strings.HasSuffix(line, ";") && parsed.Sql != "" {
 			parsed.Sql = strings.Trim(parsed.Sql, " ")
 			return true, err
