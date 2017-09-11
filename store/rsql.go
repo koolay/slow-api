@@ -58,9 +58,9 @@ func (rs *rsqlStorage) SaveMysqlSlowLog(parsed *parse.SlowQuery) error {
 			"rows_sent",
 			"rows_examined").Record(parsed).Exec()
 		if err != nil {
-			logging.Logger.INFO.Println("inserted")
-		} else {
 			logging.Logger.ERROR.Print(err)
+		} else {
+			logging.Logger.INFO.Println("inserted")
 		}
 	}
 	return err
