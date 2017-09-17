@@ -47,15 +47,21 @@ func (collector *MysqlCollector) ImportLogFile(filepath string) error {
 	if err == nil {
 		for {
 			line, _, err := r.ReadLine()
-			if err != nil {
-				return err
+			if err == io.EOF {
+				if parsed.Sql != "" {
+					err = storage.SaveMysqlSlowLog(parsed)
+				}
+				return nil
 			}
-			ok, err := parser.Parse(parsed, string(line))
-			if ok {
-				storage.SaveMysqlSlowLog(parsed)
-			}
-			if err != nil {
-				return err
+			if err == nil {
+				completed, err := parser.Parse(parsed, string(line))
+				if completed {
+					err = storage.SaveMysqlSlowLog(parsed)
+					parsed.Reset()
+				}
+				if err != nil {
+					logging.Logger.ERROR.Print(errors.WithStack(err))
+				}
 			}
 		}
 	}
