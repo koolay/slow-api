@@ -26,3 +26,6 @@ _testmain.go
 npm-debug.log
 slow-api
 slowapi
+
+.idea/
+nohup.out
