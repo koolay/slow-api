@@ -1,4 +1,4 @@
-backend="postgres"
+backend="mysql"
 log_file=""
 log_level="debug"
 notify_duration=300
@@ -6,7 +6,7 @@ notify=["mail", "slack"]
 
 [collectors]
 [collectors.mysql]
-slowlog="/var/mysql/mysql-slow.log"
+slowlog="/data/docker/log/mysql/log-slow-queries.log"
 alert_slow_seconds=3
 
 [collectors.nginx]
@@ -18,7 +18,7 @@ alert_slow_seconds=1
 dsn="postgres://postgres:dev@localhost:5432/slowapi?sslmode=disable"
 
 [backends.mysql]
-dsn="root:dev@tcp(localhost:3306)/slowapi"
+dsn="root:dev@tcp(localhost:3306)/slow_sql"
 
 [notifies]
 [notifies.mail]
