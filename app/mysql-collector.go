@@ -92,7 +92,7 @@ func (collector *MysqlCollector) Start() error {
 				storage.SaveMysqlSlowLog(parsed)
 				collector.notify(parsed)
 			} else {
-				logging.Logger.ERROR.Print(err)
+				logging.Logger.ERROR.Printf("parse error, %v", err)
 			}
 		}
 	}
